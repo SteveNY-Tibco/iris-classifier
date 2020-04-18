@@ -1,0 +1,90 @@
+{
+	"DeploymentGpID" : "model-ops-py-pipeline",
+	"DataFlow" : [{
+			"Upstream" : "s-0",
+			"Downstream" : "pickle-iris-classifier01"
+		}, {
+			"Upstream" : "pickle-iris-classifier01",
+			"Downstream" : "d-0"
+		}
+	],
+    "Components":[
+        {
+            "Type":"Source",
+            "Runtime":"flogo",
+            "Name":"s-0",
+			"Replicas": 1,
+			"DockerImage" : "bigoyang/pipeline-datasource:0.2.0",
+			"Volumes" : [
+				{
+					"Name" : "input",
+					"MountPoint" : "/usr/local/Data"
+				}
+			],
+            "Properties":[
+            	{
+                	"Name":".descriptor",
+                	"Value":"A"
+                }
+            ]
+        },
+        {
+            "Type":"PythonModel",
+            "Runtime":"python",
+            "Name":"pickle-iris-classifier01",
+			"Replicas": 1,
+			"DockerImage" : "bigoyang/python-model:0.3.0",
+			"Volumes" : [
+				{
+					"Name" : "artifacts",
+					"MountPoint" : "/app/artifacts"
+				}
+			],
+            "Properties":[
+            	{
+                	"Name":"PythonModel.URI",
+                	"Value":"/iris-classifier"
+                },
+                {
+                	"Name":"PythonModel.plugin",
+                	"Value":"artifacts.predictor"
+                }
+            ]
+        },
+        {
+            "Type":"Destination",
+            "Runtime":"flogo",
+            "Name":"d-0",
+			"Replicas": 1,
+			"DockerImage" : "bigoyang/pipeline-datadesination:0.2.0",
+			"Volumes" : [
+				{
+					"Name" : "output",
+					"MountPoint" : "/usr/local/Output"
+				}
+			],
+            "Properties":[
+                {
+                	"Name":".descriptor",
+                	"Value":"C"
+                }
+            ]
+        }
+    ],
+    "System" : {
+    		"Volume" : [
+    			{
+    				"Name" : "input",
+    				"Value" : "/Users/steven/Applications/Dev-Ops/app/Data/python/input"
+    			},	
+    			{
+    				"Name" : "artifacts",
+    				"Value" : "/Users/steven/Applications/Dev-Ops/app/Data/python/artifacts"
+    			},	
+    			{
+    				"Name" : "output",
+    				"Value" : "/Users/steven/Applications/Dev-Ops/app/Data/python/output"
+    			}	
+    		]
+    }
+}
